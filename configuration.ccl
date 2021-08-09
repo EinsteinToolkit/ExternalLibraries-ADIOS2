@@ -1,0 +1,15 @@
+# Configuration definitions for thorn ADIOS
+
+PROVIDES ADIOS
+{
+  SCRIPT src/detect.sh
+  LANG bash
+  OPTIONS ADIOS ADIOS_DIR ADIOS_INSTALL_DIR ADIOS_INC_DIRS ADIOS_LIB_DIRS ADIOS_LIBS
+}
+
+# Pass configuration options to build script
+REQUIRES ADIOS
+
+OPTIONAL HDF5 MPI
+{
+}

@@ -1,0 +1,13 @@
+Cactus Code Thorn ADIOS
+Author(s)    : Roland Haas, Erik Schnetter
+Maintainer(s): Cactus team
+Licence      : GPLv3
+--------------------------------------------------------------------------
+
+1. Purpose
+
+Distribute the ADIOS library; see https://github.com/astro-informatics/ADIOS
+
+The ADIOS code provides functionality to perform fast and exact spin spherical
+harmonic transforms based on the sampling theorem on the sphere derived in
+McEwen & Wiaux (2011).

@@ -1,0 +1,11 @@
+# Main make.code.deps file for thorn ADIOS
+
+export ADIOS_INSTALL_DIR
+export HDF5_LIB_DIRS HDF5_INC_DIRS
+
+$(CCTK_TARGET) $(OBJS) $(SRCS:%=%.d): $(SCRATCH_BUILD)/done/$(THORN)
+
+ifneq ($(ADIOS_BUILD),)
+$(SCRATCH_BUILD)/done/$(THORN): $(SRCDIR)/build.sh
+	+$(SRCDIR)/build.sh
+endif
