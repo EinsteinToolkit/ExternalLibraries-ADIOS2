@@ -10,6 +10,6 @@ PROVIDES ADIOS
 # Pass configuration options to build script
 REQUIRES ADIOS
 
-OPTIONAL HDF5 MPI
+OPTIONAL HDF5 MPI CMake
 {
 }
