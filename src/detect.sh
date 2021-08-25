@@ -63,7 +63,7 @@ if [ -n "$ADIOS_BUILD" -o -z "${ADIOS_DIR}" ]; then
     # Fortran modules may be located in the lib directory
     ADIOS_INC_DIRS="${ADIOS_DIR}/include ${ADIOS_DIR}/lib"
     ADIOS_LIB_DIRS="${ADIOS_DIR}/lib"
-    ADIOS_LIBS="siloh5"
+    ADIOS_LIBS="adios2_cxx11 adios2_fortran adios2_c adios2_core adios2_taustubs adios2_evpath adios2_ffs adios2_atl adios2_dill"
 else
     DONE_FILE=${SCRATCH_BUILD}/done/${THORN}
     if [ ! -e ${DONE_FILE} ]; then
