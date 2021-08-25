@@ -34,7 +34,7 @@ fi
 # assign default values to variables.
 # Try to find the library if build isn't explicitly requested
 if [ -z "${ADIOS_BUILD}" -a -z "${ADIOS_INC_DIRS}" -a -z "${ADIOS_LIB_DIRS}" -a -z "${ADIOS_LIBS}" ]; then
-    find_lib ADIOS silo 1 1.0 "siloh5" "silo.h" "$ADIOS_DIR"
+    find_lib ADIOS adios 1 1.0 adios2_core "adios2.h" "$ADIOS_DIR"
 fi
 
 THORN=ADIOS
