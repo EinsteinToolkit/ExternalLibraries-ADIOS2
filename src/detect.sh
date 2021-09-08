@@ -64,6 +64,9 @@ if [ -n "$ADIOS_BUILD" -o -z "${ADIOS_DIR}" ]; then
     ADIOS_INC_DIRS="${ADIOS_DIR}/include ${ADIOS_DIR}/lib"
     ADIOS_LIB_DIRS="${ADIOS_DIR}/lib"
     ADIOS_LIBS="adios2_cxx11 adios2_fortran adios2_c adios2_core adios2_taustubs adios2_evpath adios2_ffs adios2_atl adios2_dill"
+    if [ -n "${MPI_DIR+set}" ]; then
+        ADIOS_LIBS="adios2_cxx11_mpi adios2_c_mpi adios2_fortran_mpi adios2_core_mpi ${ADIOS_LIBS}"
+    fi
 else
     DONE_FILE=${SCRATCH_BUILD}/done/${THORN}
     if [ ! -e ${DONE_FILE} ]; then
