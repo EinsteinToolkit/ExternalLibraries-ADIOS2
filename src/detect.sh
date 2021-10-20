@@ -101,6 +101,7 @@ fi
 echo "BEGIN MAKE_DEFINITION"
 echo "ADIOS_BUILD          = ${ADIOS_BUILD}"
 echo "ADIOS_ENABLE_FORTRAN = ${ADIOS_ENABLE_FORTRAN}"
+echo "ADIOS_ENABLE_SST     = ${ADIOS_ENABLE_SST}"
 echo "LIBSZ_DIR           = ${LIBSZ_DIR}"
 echo "LIBZ_DIR            = ${LIBZ_DIR}"
 echo "ADIOS_INSTALL_DIR    = ${ADIOS_INSTALL_DIR}"
