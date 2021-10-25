@@ -23,7 +23,12 @@ fi
 
 # default value for FORTRAN support
 if [ -z "$ADIOS_ENABLE_FORTRAN" ] ; then
-    ADIOS_ENABLE_FORTRAN="OFF"
+    ADIOS_ENABLE_FORTRAN="no"
+fi
+
+# default value for SST support
+if [ -z "$ADIOS_ENABLE_SST" ] ; then
+    ADIOS_ENABLE_SST="no"
 fi
 
 ################################################################################
@@ -63,9 +68,15 @@ if [ -n "$ADIOS_BUILD" -o -z "${ADIOS_DIR}" ]; then
     # Fortran modules may be located in the lib directory
     ADIOS_INC_DIRS="${ADIOS_DIR}/include ${ADIOS_DIR}/lib"
     ADIOS_LIB_DIRS="${ADIOS_DIR}/lib"
-    ADIOS_LIBS="adios2_cxx11 adios2_fortran adios2_c adios2_core adios2_taustubs adios2_evpath adios2_ffs adios2_atl adios2_dill"
+    ADIOS_LIBS="adios2_cxx11 adios2_c adios2_core adios2_taustubs"
+    if [ "$(echo ${ADIOS_ENBABLE_FORTRAN} | tr '[:upper:]' '[:lower:]')" = 'yes' ]; then
+      ADIOS_LIBS="adios2_fortran ${ADIOS_LIBS}"
+    fi
     if [ -n "${MPI_DIR+set}" ]; then
         ADIOS_LIBS="adios2_cxx11_mpi adios2_c_mpi adios2_fortran_mpi adios2_core_mpi ${ADIOS_LIBS}"
+        if [ "$(echo ${ADIOS_ENBABLE_FORTRAN} | tr '[:upper:]' '[:lower:]')" = 'yes' ]; then
+          ADIOS_LIBS="adios2_fortran_mpi ${ADIOS_LIBS}"
+        fi
     fi
 else
     DONE_FILE=${SCRATCH_BUILD}/done/${THORN}
