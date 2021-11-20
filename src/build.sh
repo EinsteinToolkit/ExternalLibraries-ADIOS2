@@ -42,6 +42,7 @@ ${TAR?} xf ${SRCDIR}/../dist/${NAME}.tar
 echo "ADIOS: Applying patches..."
 pushd ${NAME}
 ${PATCH?} -p1 < ${SRCDIR}/../dist/h5vol_static.patch
+${PATCH?} -p1 < ${SRCDIR}/../dist/hdf5_version.patch
 # Some (ancient but still used) versions of patch don't support the
 # patch format used here but also don't report an error using the exit
 # code. So we use this patch to test for this
