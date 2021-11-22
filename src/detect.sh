@@ -73,7 +73,7 @@ if [ -n "$ADIOS_BUILD" -o -z "${ADIOS_DIR}" ]; then
       ADIOS_LIBS="adios2_fortran ${ADIOS_LIBS}"
     fi
     if [ -n "${MPI_DIR+set}" ]; then
-        ADIOS_LIBS="adios2_cxx11_mpi adios2_c_mpi adios2_fortran_mpi adios2_core_mpi ${ADIOS_LIBS}"
+        ADIOS_LIBS="adios2_cxx11_mpi adios2_c_mpi adios2_core_mpi ${ADIOS_LIBS}"
         if [ "$(echo ${ADIOS_ENBABLE_FORTRAN} | tr '[:upper:]' '[:lower:]')" = 'yes' ]; then
           ADIOS_LIBS="adios2_fortran_mpi ${ADIOS_LIBS}"
         fi
