@@ -21,6 +21,12 @@ else
     ADIOS_BUILD=
 fi
 
+# default value for CUDA support
+# TODO: hook up with ExternalLibraries/CUDA
+if [ -z "$ADIOS_ENABLE_CUDA" ] ; then
+    ADIOS_ENABLE_CUDA="no"
+fi
+
 # default value for FORTRAN support
 if [ -z "$ADIOS_ENABLE_FORTRAN" ] ; then
     ADIOS_ENABLE_FORTRAN="no"
