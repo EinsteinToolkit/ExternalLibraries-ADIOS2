@@ -74,7 +74,7 @@ if [ -n "$ADIOS_BUILD" -o -z "${ADIOS_DIR}" ]; then
     # Fortran modules may be located in the lib directory
     ADIOS_INC_DIRS="${ADIOS_DIR}/include ${ADIOS_DIR}/lib"
     ADIOS_LIB_DIRS="${ADIOS_DIR}/lib"
-    ADIOS_LIBS="adios2_cxx11 adios2_c adios2_core adios2_taustubs"
+    ADIOS_LIBS="adios2_cxx11 adios2_c adios2_core"
     if [ "$(echo ${ADIOS_ENBABLE_FORTRAN} | tr '[:upper:]' '[:lower:]')" = 'yes' ]; then
       ADIOS_LIBS="adios2_fortran ${ADIOS_LIBS}"
     fi
