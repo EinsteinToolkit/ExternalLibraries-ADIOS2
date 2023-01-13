@@ -14,7 +14,7 @@ set -e                          # Abort on errors
 
 # Set locations
 THORN=ADIOS
-NAME=ADIOS2-2.8.1
+NAME=ADIOS2-2.8.3
 SRCDIR="$(dirname $0)"
 BUILD_DIR=${SCRATCH_BUILD}/build/${THORN}
 if [ -z "${ADIOS_INSTALL_DIR}" ]; then
