@@ -84,6 +84,11 @@ fi
 # "Static build, BP5 on SST off fails"
 ADIOS_USE_BP5="${ADIOS_ENABLE_SST}"
 
+# ADIOS fails with HDF5 1.12 due to H5Oget_info silently having changed its API,
+# so force the minimum knonw API to work
+CXXFLAGS="$CPPFLAGS -DH5Oget_info_vers=2 -DH5O_info_t_vers=1 $CXXFLAGS"
+CFLAGS="$CPPFLAGS -DH5Oget_info_vers=2 -DH5O_info_t_vers=1 $CFLAGS"
+
 # TODO: merge with option list options
 # if [ -n "${HAVE_CAPABILITY_CUDA}" ]; then
 #     ADIOS_USE_CUDA=ON
