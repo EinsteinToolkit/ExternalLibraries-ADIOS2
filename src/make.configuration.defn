@@ -1,6 +1,6 @@
-# make.configuration.defn file for thorn ADIOS
+# make.configuration.defn file for thorn ADIOS2
 
-# Define standard ADIOS utilities and install those that we could build/that are
+# Define standard ADIOS2 utilities and install those that we could build/that are
 # present in the system
-STD_ADIOS_UTILS = 
-ALL_UTILS += $(STD_ADIOS_UTILS)
+STD_ADIOS2_UTILS = 
+ALL_UTILS += $(STD_ADIOS2_UTILS)

@@ -1,32 +1,32 @@
-# make.configuration.deps file for thorn ADIOS
+# make.configuration.deps file for thorn ADIOS2
 
-# Standard ADIOS utilities are copied from the install directory
+# Standard ADIOS2 utilities are copied from the install directory
 
-$(UTIL_DIR)/%: $(ADIOS_DIR)/bin/%
+$(UTIL_DIR)/%: $(ADIOS2_DIR)/bin/%
 	@echo "Copying $* from $< to $(UTIL_DIR)"
 	-$(MKDIR) $(MKDIRFLAGS) $(UTIL_DIR) 2> /dev/null
 	cp $< $@
 
 
 
-# Cactus ADIOS utilities are built
+# Cactus ADIOS2 utilities are built
 
-ADIOS_BUILD_DIR = $(BUILD_DIR)/ADIOS
-ADIOS_SRC_DIR   = $(PACKAGE_DIR)/ExternalLibraries/ADIOS/src/util
+ADIOS2_BUILD_DIR = $(BUILD_DIR)/ADIOS2
+ADIOS2_SRC_DIR   = $(PACKAGE_DIR)/ExternalLibraries/ADIOS2/src/util
 
-ADIOS_CFLAGS  = $(CPPFLAGS) -DCCODE -I$(CONFIG) -I$(BINDINGS_DIR)/include -I$(BINDINGS_DIR)/include/ADIOS -I$(FLESH_DIR)/include $(ADIOS_INC_DIRS:%=-I%) $(MPI_INC_DIRS:%=-I%) $(CFLAGS)
-ADIOS_LDFLAGS = $(DEBUG_LD) $(LDFLAGS) $(CXXFLAGS) $(EXTRAFLAGS) $(GENERAL_LIBRARIES)
+ADIOS2_CFLAGS  = $(CPPFLAGS) -DCCODE -I$(CONFIG) -I$(BINDINGS_DIR)/include -I$(BINDINGS_DIR)/include/ADIOS2 -I$(FLESH_DIR)/include $(ADIOS2_INC_DIRS:%=-I%) $(MPI_INC_DIRS:%=-I%) $(CFLAGS)
+ADIOS2_LDFLAGS = $(DEBUG_LD) $(LDFLAGS) $(CXXFLAGS) $(EXTRAFLAGS) $(GENERAL_LIBRARIES)
 
 
 
 # Compile
-$(ADIOS_BUILD_DIR)/%.o: $(ADIOS_SRC_DIR)/%.c
+$(ADIOS2_BUILD_DIR)/%.o: $(ADIOS2_SRC_DIR)/%.c
 	@echo "Compiling $<"
-	-$(MKDIR) $(MKDIRFLAGS) $(ADIOS_BUILD_DIR) 2> /dev/null
-	$(CC) $< $(ADIOS_CFLAGS) -DTHORN_IS_ADIOS -c -o $@
+	-$(MKDIR) $(MKDIRFLAGS) $(ADIOS2_BUILD_DIR) 2> /dev/null
+	$(CC) $< $(ADIOS2_CFLAGS) -DTHORN_IS_ADIOS2 -c -o $@
 
 # Link
-$(UTIL_DIR)/%: $(ADIOS_BUILD_DIR)/%.o
+$(UTIL_DIR)/%: $(ADIOS2_BUILD_DIR)/%.o
 	@echo "Creating $* in $(UTIL_DIR) from $<"
 	-$(MKDIR) $(MKDIRFLAGS) $(UTIL_DIR) 2> /dev/null
-	$(LD) $< -o $@ $(ADIOS_LDFLAGS)
+	$(LD) $< -o $@ $(ADIOS2_LDFLAGS)

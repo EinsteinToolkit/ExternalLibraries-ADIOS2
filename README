@@ -1,13 +1,17 @@
-Cactus Code Thorn ADIOS
+Cactus Code Thorn ADIOS2
 Author(s)    : Roland Haas, Erik Schnetter
 Maintainer(s): Cactus team
-Licence      : GPLv3
+Licence      : Apache-2.0 license 
 --------------------------------------------------------------------------
 
 1. Purpose
 
-Distribute the ADIOS library; see https://github.com/astro-informatics/ADIOS
+Distribute the ADIOS2 library; see https://csmd.ornl.gov/software/adios2
 
-The ADIOS code provides functionality to perform fast and exact spin spherical
-harmonic transforms based on the sampling theorem on the sphere derived in
-McEwen & Wiaux (2011).
+ADIOS 2: The Adaptable Input Output (I/O) System version 2  is an open-source
+framework that addresses scientific data management challenges, e.g. scalable
+parallel I/O, as we approach the exascale era in high-performance computing
+(HPC). ADIOS 2 bindings are available in C++, C, Fortran, Python and can be
+used on supercomputers, personal computers, and cloud systems running on
+Linux, macOS and Windows. ADIOS 2 has out-of-the-box support for MPI and
+serial environments.
