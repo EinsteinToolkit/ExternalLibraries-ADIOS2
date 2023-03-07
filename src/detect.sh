@@ -41,11 +41,48 @@ fi
 # Decide which libraries to link with
 ################################################################################
 
+ADIOS2_REQ_LIBS="adios2_cxx11 adios2_c adios2_core"
+if [ "${ADIOS2_ENABLE_FORTRAN}" = 'yes' ]; then
+    ADIOS2_REQ_LIBS="adios2_fortran $ADIOS2_REQ_LIBS"
+fi
+
 # Set up names of the libraries based on configuration variables. Also
 # assign default values to variables.
 # Try to find the library if build isn't explicitly requested
 if [ -z "${ADIOS2_BUILD}" -a -z "${ADIOS2_INC_DIRS}" -a -z "${ADIOS2_LIB_DIRS}" -a -z "${ADIOS2_LIBS}" ]; then
-    find_lib ADIOS2 adios 1 1.0 adios2_core "adios2.h" "$ADIOS2_DIR"
+    find_lib ADIOS2 adios 1 1.0 "$ADIOS2_REQ_LIBS" "adios2.h" "$ADIOS2_DIR"
+
+    # any libraries needed b/c of ADIOS compile options
+    ADIOS2CONFFILES="adios2/common/ADIOSConfig.h"
+    for dir in $ADIOS2_INC_DIRS; do
+        for file in $ADIOS2CONFFILES ; do
+            if [ -r "$dir/$file" ]; then
+                ADIOS2CONF="$ADIOS2CONF $dir/$file"
+                break
+            fi
+        done
+    done
+    if [ -z "$ADIOS2CONF" ]; then
+        echo 'BEGIN MESSAGE'
+        echo 'WARNING in ADIOS2 configuration: '
+        echo "None of $ADIOS2CONFFILES found in $ADIOS2_INC_DIRS"
+        echo "Automatic detection of MPI use not possible"
+        echo 'END MESSAGE'
+    else
+      # Check whether we have to link with MPI
+      if grep -qe '^#define ADIOS2_HAVE_MPI' $ADIOS2PUBCONF 2> /dev/null; then
+          test_mpi=0
+      else
+          test_mpi=1
+      fi
+      if [ $test_mpi -eq 0 ]; then
+          mpi_libs="" # need to prepend MPI libs (so would need to traverse right-to-left in list)
+          for lib in $ADIOS2_REQ_LIBS ; do
+              mpi_libs="$mpi_libs ${lib}_mpi"
+          done
+          ADIOS2_LIBS="$mpi_libs $ADIOS2_LIBS"
+      fi
+    fi
 fi
 
 THORN=ADIOS2
@@ -93,11 +130,8 @@ else
 fi
 
 if [ -n "$ADIOS2_DIR" ]; then
-    : ${ADIOS2_RAW_LIB_DIRS:="$ADIOS2_LIB_DIRS"}
     # Fortran modules may be located in the lib directory
-    ADIOS2_INC_DIRS="$ADIOS2_RAW_LIB_DIRS $ADIOS2_INC_DIRS"
-    # We need the un-scrubbed inc dirs to look for a header file below.
-    : ${ADIOS2_RAW_INC_DIRS:="$ADIOS2_INC_DIRS"}
+    ADIOS2_INC_DIRS="$ADIOS2_LIB_DIRS $ADIOS2_INC_DIRS"
 else
     echo 'BEGIN ERROR'
     echo 'ERROR in ADIOS2 configuration: Could neither find nor build library.'
