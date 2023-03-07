@@ -114,24 +114,23 @@ fi
 # Configure Cactus
 ################################################################################
 
-# Pass configuration options to build script
-echo "BEGIN MAKE_DEFINITION"
-echo "ADIOS2_BUILD          = ${ADIOS2_BUILD}"
-echo "ADIOS2_ENABLE_FORTRAN = ${ADIOS2_ENABLE_FORTRAN}"
-echo "ADIOS2_ENABLE_SST     = ${ADIOS2_ENABLE_SST}"
-echo "LIBSZ_DIR           = ${LIBSZ_DIR}"
-echo "LIBZ_DIR            = ${LIBZ_DIR}"
-echo "ADIOS2_INSTALL_DIR    = ${ADIOS2_INSTALL_DIR}"
-echo "END MAKE_DEFINITION"
-
 # Pass options to Cactus
 echo "BEGIN MAKE_DEFINITION"
+echo "ADIOS2_BUILD          = ${ADIOS2_BUILD}"
 echo "ADIOS2_DIR            = ${ADIOS2_DIR}"
 echo "ADIOS2_ENABLE_FORTRAN = ${ADIOS2_ENABLE_FORTRAN}"
+echo "ADIOS2_ENABLE_SST     = ${ADIOS2_ENABLE_SST}"
 echo "ADIOS2_INC_DIRS       = ${ADIOS2_INC_DIRS} ${ZLIB_INC_DIRS}"
 echo "ADIOS2_LIB_DIRS       = ${ADIOS2_LIB_DIRS} ${ZLIB_LIB_DIRS}"
 echo "ADIOS2_LIBS           = ${ADIOS2_LIBS}"
+echo "ADIOS2_INSTALL_DIR    = ${ADIOS2_INSTALL_DIR}"
 echo "END MAKE_DEFINITION"
+
+echo "BEGIN DEFINE"
+if [ -n "${MPI_DIR+set}" ]; then
+echo "ADIOS2_USE_MPI 1"
+fi
+echo "END DEFINE"
 
 echo 'INCLUDE_DIRECTORY $(ADIOS2_INC_DIRS)'
 echo 'LIBRARY_DIRECTORY $(ADIOS2_LIB_DIRS)'
