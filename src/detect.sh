@@ -70,7 +70,7 @@ if [ -z "${ADIOS2_BUILD}" -a -z "${ADIOS2_INC_DIRS}" -a -z "${ADIOS2_LIB_DIRS}" 
         echo 'END MESSAGE'
     else
       # Check whether we have to link with MPI
-      if grep -qe '^#define ADIOS2_HAVE_MPI' $ADIOS2PUBCONF 2> /dev/null; then
+      if grep -qe '^#define ADIOS2_HAVE_MPI' "$ADIOS2CONF" 2> /dev/null; then
           test_mpi=0
       else
           test_mpi=1
