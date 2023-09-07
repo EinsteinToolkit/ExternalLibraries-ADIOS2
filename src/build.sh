@@ -39,24 +39,6 @@ echo "ADIOS2: Unpacking archive..."
 pushd ${BUILD_DIR}
 ${TAR?} xf ${SRCDIR}/../dist/${NAME}.tar
 
-echo "ADIOS2: Applying patches..."
-pushd ${NAME}
-${PATCH?} -p1 < ${SRCDIR}/../dist/hdf5_version.patch
-# Some (ancient but still used) versions of patch don't support the
-# patch format used here but also don't report an error using the exit
-# code. So we use this patch to test for this
-${PATCH?} -p1 < ${SRCDIR}/../dist/patchtest.patch
-if [ ! -e .patch_tmp ]; then
-    echo 'BEGIN ERROR'
-    echo 'The version of patch is too old to understand this patch format.'
-    echo 'Please set the PATCH environment variable to a more recent '
-    echo 'version of the patch command.'
-    echo 'END ERROR'
-    exit 1
-fi
-rm -f .patch_tmp
-popd
-
 echo "ADIOS2: Configuring..."
 cd ${NAME}
 
@@ -83,11 +65,6 @@ fi
 # workaround for https://github.com/ornladios/ADIOS2/issues/3148
 # "Static build, BP5 on SST off fails"
 ADIOS2_USE_BP5="${ADIOS2_ENABLE_SST}"
-
-# ADIOS2 fails with HDF5 1.12 due to H5Oget_info silently having changed its API,
-# so force the minimum knonw API to work
-CXXFLAGS="$CPPFLAGS -DH5Oget_info_vers=2 -DH5O_info_t_vers=1 $CXXFLAGS"
-CFLAGS="$CPPFLAGS -DH5Oget_info_vers=2 -DH5O_info_t_vers=1 $CFLAGS"
 
 # TODO: merge with option list options
 # if [ -n "${HAVE_CAPABILITY_CUDA}" ]; then
