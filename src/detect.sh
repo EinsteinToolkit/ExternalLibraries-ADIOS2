@@ -10,10 +10,10 @@ if [ "$(echo ${VERBOSE} | tr '[:upper:]' '[:lower:]')" = 'yes' ]; then
 fi
 set -e                          # Abort on errors
 
-. $CCTK_HOME/lib/make/bash_utils.sh
+. "$CCTK_HOME/lib/make/bash_utils.sh"
 
 # Take care of requests to build the library in any case
-ADIOS2_DIR_INPUT=$ADIOS2_DIR
+ADIOS2_DIR_INPUT="$ADIOS2_DIR"
 if [ "$(echo "${ADIOS2_DIR}" | tr '[a-z]' '[A-Z]')" = 'BUILD' ]; then
     ADIOS2_BUILD=1
     ADIOS2_DIR=
@@ -42,12 +42,8 @@ fi
 ################################################################################
 
 ADIOS2_REQ_LIBS="adios2_cxx11 adios2_c adios2_core"
-if [ "$(echo ${ADIOS2_ENABLE_FORTRAN} | tr '[:upper:]' '[:lower:]')" = 'yes' ]; then
+if [ "${ADIOS2_ENABLE_FORTRAN}" = 'yes' ]; then
     ADIOS2_REQ_LIBS="adios2_fortran $ADIOS2_REQ_LIBS"
-fi
-if [ "$(echo ${ADIOS2_ENABLE_SST} | tr '[:upper:]' '[:lower:]')" = 'yes' ] ; then
-    # core depends on adios2_evpath
-    ADIOS2_REQ_LIBS="$ADIOS2_REQ_LIBS adios2_evpath adios2_atl adios2_enet adios2_ffs adios2_dill"
 fi
 
 # Set up names of the libraries based on configuration variables. Also
@@ -117,11 +113,14 @@ if [ -n "$ADIOS2_BUILD" -o -z "${ADIOS2_DIR}" ]; then
     # Fortran modules may be located in the lib directory
     ADIOS2_INC_DIRS="${ADIOS2_DIR}/include ${ADIOS2_DIR}/lib"
     ADIOS2_LIB_DIRS="${ADIOS2_DIR}/lib"
-    ADIOS2_LIBS="$ADIOS2_REQ_LIBS"
+    ADIOS2_LIBS="adios2_cxx11 adios2_c adios2_core"
+    if [ "$(echo ${ADIOS2_ENBABLE_FORTRAN} | tr '[:upper:]' '[:lower:]')" = 'yes' ]; then
+        ADIOS2_LIBS="adios2_fortran ${ADIOS2_LIBS}"
+    fi
     if [ -n "${MPI_DIR+set}" ]; then
         ADIOS2_LIBS="adios2_cxx11_mpi adios2_c_mpi adios2_core_mpi ${ADIOS2_LIBS}"
-        if [ "$(echo ${ADIOS2_ENABLE_FORTRAN} | tr '[:upper:]' '[:lower:]')" = 'yes' ]; then
-          ADIOS2_LIBS="adios2_fortran_mpi ${ADIOS2_LIBS}"
+        if [ "$(echo ${ADIOS2_ENBABLE_FORTRAN} | tr '[:upper:]' '[:lower:]')" = 'yes' ]; then
+            ADIOS2_LIBS="adios2_fortran_mpi ${ADIOS2_LIBS}"
         fi
     fi
 else
@@ -165,7 +164,7 @@ echo "END MAKE_DEFINITION"
 
 echo "BEGIN DEFINE"
 if [ -n "${MPI_DIR+set}" ]; then
-echo "ADIOS2_USE_MPI 1"
+    echo "ADIOS2_USE_MPI 1"
 fi
 echo "END DEFINE"
 
