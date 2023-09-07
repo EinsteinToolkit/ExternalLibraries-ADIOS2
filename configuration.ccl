@@ -10,6 +10,6 @@ PROVIDES ADIOS2
 # Pass configuration options to build script
 REQUIRES ADIOS2
 
-OPTIONAL HDF5 MPI CUDA CMake
+OPTIONAL MPI CUDA CMake
 {
 }
