@@ -32,9 +32,9 @@ if [ -z "$ADIOS2_ENABLE_FORTRAN" ] ; then
     ADIOS2_ENABLE_FORTRAN="no"
 fi
 
-# default value for SST support
+# default value for SST and BP5 support
 if [ -z "$ADIOS2_ENABLE_SST" ] ; then
-    ADIOS2_ENABLE_SST="no"
+    ADIOS2_ENABLE_SST="yes"
 fi
 
 ################################################################################
