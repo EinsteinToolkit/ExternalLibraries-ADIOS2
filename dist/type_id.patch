@@ -1,0 +1,386 @@
+diff -ur ADIOS2-2.9.1.orig/thirdparty/ffs/ffs/cod/cod.l ADIOS2-2.9.1/thirdparty/ffs/ffs/cod/cod.l
+--- ADIOS2-2.9.1.orig/thirdparty/ffs/ffs/cod/cod.l	2023-08-03 11:30:15
++++ ADIOS2-2.9.1/thirdparty/ffs/ffs/cod/cod.l	2023-12-23 19:12:05
+@@ -185,7 +185,7 @@
+ [A-Za-z_][A-Za-z0-9_]*	{
+ 				yylval.info.string = create_string_from_yytext();
+ 				if (is_defined_type(yylval.info.string)) {
+-				    RETURN(type_id);
++				    RETURN(yytype_id);
+ 				} else if (is_enumeration_constant(yylval.info.string)) {
+ 				    RETURN(enumeration_constant);
+ 				} else {
+diff -ur ADIOS2-2.9.1.orig/thirdparty/ffs/ffs/cod/cod.y ADIOS2-2.9.1/thirdparty/ffs/ffs/cod/cod.y
+--- ADIOS2-2.9.1.orig/thirdparty/ffs/ffs/cod/cod.y	2023-08-03 11:30:15
++++ ADIOS2-2.9.1/thirdparty/ffs/ffs/cod/cod.y	2023-12-23 19:12:05
+@@ -278,7 +278,7 @@
+ %token <info> string_constant
+ %token <info> floating_constant
+ %token <info> identifier_ref
+-%token <info> type_id
++%token <info> yytype_id
+ %token <info> enumeration_constant
+ 
+ %type <info> struct_or_union;
+@@ -1031,7 +1031,7 @@
+ 	    $$->node.type_specifier.lx_srcpos = $1.lx_srcpos;
+ 	    $$->node.type_specifier.token = STRING;
+ 	}
+-	| type_id {
++	| yytype_id {
+ 	    $$ = cod_new_identifier();
+ 	    $$->node.identifier.lx_srcpos = $1.lx_srcpos;
+ 	    $$->node.identifier.id = $1.string;
+diff -ur ADIOS2-2.9.1.orig/thirdparty/ffs/ffs/cod/pregen_source/Linux/cod.l ADIOS2-2.9.1/thirdparty/ffs/ffs/cod/pregen_source/Linux/cod.l
+--- ADIOS2-2.9.1.orig/thirdparty/ffs/ffs/cod/pregen_source/Linux/cod.l	2023-08-03 11:30:15
++++ ADIOS2-2.9.1/thirdparty/ffs/ffs/cod/pregen_source/Linux/cod.l	2023-12-23 19:12:05
+@@ -185,7 +185,7 @@
+ [A-Za-z_][A-Za-z0-9_]*	{
+ 				yylval.info.string = create_string_from_yytext();
+ 				if (is_defined_type(yylval.info.string)) {
+-				    RETURN(type_id);
++				    RETURN(yytype_id);
+ 				} else if (is_enumeration_constant(yylval.info.string)) {
+ 				    RETURN(enumeration_constant);
+ 				} else {
+diff -ur ADIOS2-2.9.1.orig/thirdparty/ffs/ffs/cod/pregen_source/Linux/cod.tab.c ADIOS2-2.9.1/thirdparty/ffs/ffs/cod/pregen_source/Linux/cod.tab.c
+--- ADIOS2-2.9.1.orig/thirdparty/ffs/ffs/cod/pregen_source/Linux/cod.tab.c	2023-08-03 11:30:15
++++ ADIOS2-2.9.1/thirdparty/ffs/ffs/cod/pregen_source/Linux/cod.tab.c	2023-12-23 19:12:05
+@@ -146,7 +146,7 @@
+      string_constant = 335,
+      floating_constant = 336,
+      identifier_ref = 337,
+-     type_id = 338,
++     yytype_id = 338,
+      enumeration_constant = 339
+    };
+ #endif
+@@ -231,7 +231,7 @@
+ #define string_constant 335
+ #define floating_constant 336
+ #define identifier_ref 337
+-#define type_id 338
++#define yytype_id 338
+ #define enumeration_constant 339
+ 
+ 
+@@ -877,7 +877,7 @@
+   "STATIC", "EXTERN_TOKEN", "STRUCT", "ENUM", "UNION", "CONST", "SIZEOF",
+   "TYPEDEF", "RETURN_TOKEN", "CONTINUE", "BREAK", "GOTO", "PRINT", "COMMA",
+   "DOTDOTDOT", "integer_constant", "character_constant", "string_constant",
+-  "floating_constant", "identifier_ref", "type_id", "enumeration_constant",
++  "floating_constant", "identifier_ref", "yytype_id", "enumeration_constant",
+   "$accept", "start", "primary_expression", "postfix_expression",
+   "argument_expression_list", "unary_expression", "unary_operator",
+   "cast_expression", "multiplicative_expression", "additive_expression",
+diff -ur ADIOS2-2.9.1.orig/thirdparty/ffs/ffs/cod/pregen_source/Linux/cod.tab.h ADIOS2-2.9.1/thirdparty/ffs/ffs/cod/pregen_source/Linux/cod.tab.h
+--- ADIOS2-2.9.1.orig/thirdparty/ffs/ffs/cod/pregen_source/Linux/cod.tab.h	2023-08-03 11:30:15
++++ ADIOS2-2.9.1/thirdparty/ffs/ffs/cod/pregen_source/Linux/cod.tab.h	2023-12-23 19:12:05
+@@ -119,7 +119,7 @@
+      string_constant = 335,
+      floating_constant = 336,
+      identifier_ref = 337,
+-     type_id = 338,
++     yytype_id = 338,
+      enumeration_constant = 339
+    };
+ #endif
+@@ -204,7 +204,7 @@
+ #define string_constant 335
+ #define floating_constant 336
+ #define identifier_ref 337
+-#define type_id 338
++#define yytype_id 338
+ #define enumeration_constant 339
+ 
+ 
+diff -ur ADIOS2-2.9.1.orig/thirdparty/ffs/ffs/cod/pregen_source/Linux/cod.y ADIOS2-2.9.1/thirdparty/ffs/ffs/cod/pregen_source/Linux/cod.y
+--- ADIOS2-2.9.1.orig/thirdparty/ffs/ffs/cod/pregen_source/Linux/cod.y	2023-08-03 11:30:15
++++ ADIOS2-2.9.1/thirdparty/ffs/ffs/cod/pregen_source/Linux/cod.y	2023-12-23 19:12:05
+@@ -272,7 +272,7 @@
+ %token <info> string_constant
+ %token <info> floating_constant
+ %token <info> identifier_ref
+-%token <info> type_id
++%token <info> yytype_id
+ %token <info> enumeration_constant
+ 
+ %type <info> struct_or_union;
+@@ -1025,7 +1025,7 @@
+ 	    $$->node.type_specifier.lx_srcpos = $1.lx_srcpos;
+ 	    $$->node.type_specifier.token = STRING;
+ 	}
+-	| type_id {
++	| yytype_id {
+ 	    $$ = cod_new_identifier();
+ 	    $$->node.identifier.lx_srcpos = $1.lx_srcpos;
+ 	    $$->node.identifier.id = $1.string;
+diff -ur ADIOS2-2.9.1.orig/thirdparty/ffs/ffs/cod/pregen_source/Linux/lex.yy.c ADIOS2-2.9.1/thirdparty/ffs/ffs/cod/pregen_source/Linux/lex.yy.c
+--- ADIOS2-2.9.1.orig/thirdparty/ffs/ffs/cod/pregen_source/Linux/lex.yy.c	2023-08-03 11:30:15
++++ ADIOS2-2.9.1/thirdparty/ffs/ffs/cod/pregen_source/Linux/lex.yy.c	2023-12-23 19:12:05
+@@ -1431,7 +1431,7 @@
+ {
+ 				yylval.info.string = create_string_from_yytext();
+ 				if (is_defined_type(yylval.info.string)) {
+-				    RETURN(type_id);
++				    RETURN(yytype_id);
+ 				} else if (is_enumeration_constant(yylval.info.string)) {
+ 				    RETURN(enumeration_constant);
+ 				} else {
+diff -ur ADIOS2-2.9.1.orig/thirdparty/ffs/ffs/cod/pregen_source/Windows/cod.l ADIOS2-2.9.1/thirdparty/ffs/ffs/cod/pregen_source/Windows/cod.l
+--- ADIOS2-2.9.1.orig/thirdparty/ffs/ffs/cod/pregen_source/Windows/cod.l	2023-08-03 11:30:15
++++ ADIOS2-2.9.1/thirdparty/ffs/ffs/cod/pregen_source/Windows/cod.l	2023-12-23 19:12:05
+@@ -185,7 +185,7 @@
+ [A-Za-z_][A-Za-z0-9_]*	{
+ 				yylval.info.string = create_string_from_yytext();
+ 				if (is_defined_type(yylval.info.string)) {
+-				    RETURN(type_id);
++				    RETURN(yytype_id);
+ 				} else if (is_enumeration_constant(yylval.info.string)) {
+ 				    RETURN(enumeration_constant);
+ 				} else {
+diff -ur ADIOS2-2.9.1.orig/thirdparty/ffs/ffs/cod/pregen_source/Windows/cod.tab.c ADIOS2-2.9.1/thirdparty/ffs/ffs/cod/pregen_source/Windows/cod.tab.c
+--- ADIOS2-2.9.1.orig/thirdparty/ffs/ffs/cod/pregen_source/Windows/cod.tab.c	2023-08-03 11:30:15
++++ ADIOS2-2.9.1/thirdparty/ffs/ffs/cod/pregen_source/Windows/cod.tab.c	2023-12-23 19:12:05
+@@ -146,7 +146,7 @@
+      string_constant = 335,
+      floating_constant = 336,
+      identifier_ref = 337,
+-     type_id = 338,
++     yytype_id = 338,
+      enumeration_constant = 339
+    };
+ #endif
+@@ -231,7 +231,7 @@
+ #define string_constant 335
+ #define floating_constant 336
+ #define identifier_ref 337
+-#define type_id 338
++#define yytype_id 338
+ #define enumeration_constant 339
+ 
+ 
+@@ -877,7 +877,7 @@
+   "STATIC", "EXTERN_TOKEN", "STRUCT", "ENUM", "UNION", "CONST", "SIZEOF",
+   "TYPEDEF", "RETURN_TOKEN", "CONTINUE", "BREAK", "GOTO", "PRINT", "COMMA",
+   "DOTDOTDOT", "integer_constant", "character_constant", "string_constant",
+-  "floating_constant", "identifier_ref", "type_id", "enumeration_constant",
++  "floating_constant", "identifier_ref", "yytype_id", "enumeration_constant",
+   "$accept", "start", "primary_expression", "postfix_expression",
+   "argument_expression_list", "unary_expression", "unary_operator",
+   "cast_expression", "multiplicative_expression", "additive_expression",
+diff -ur ADIOS2-2.9.1.orig/thirdparty/ffs/ffs/cod/pregen_source/Windows/cod.tab.h ADIOS2-2.9.1/thirdparty/ffs/ffs/cod/pregen_source/Windows/cod.tab.h
+--- ADIOS2-2.9.1.orig/thirdparty/ffs/ffs/cod/pregen_source/Windows/cod.tab.h	2023-08-03 11:30:15
++++ ADIOS2-2.9.1/thirdparty/ffs/ffs/cod/pregen_source/Windows/cod.tab.h	2023-12-23 19:12:05
+@@ -119,7 +119,7 @@
+      string_constant = 335,
+      floating_constant = 336,
+      identifier_ref = 337,
+-     type_id = 338,
++     yytype_id = 338,
+      enumeration_constant = 339
+    };
+ #endif
+@@ -204,7 +204,7 @@
+ #define string_constant 335
+ #define floating_constant 336
+ #define identifier_ref 337
+-#define type_id 338
++#define yytype_id 338
+ #define enumeration_constant 339
+ 
+ 
+diff -ur ADIOS2-2.9.1.orig/thirdparty/ffs/ffs/cod/pregen_source/Windows/cod.y ADIOS2-2.9.1/thirdparty/ffs/ffs/cod/pregen_source/Windows/cod.y
+--- ADIOS2-2.9.1.orig/thirdparty/ffs/ffs/cod/pregen_source/Windows/cod.y	2023-08-03 11:30:15
++++ ADIOS2-2.9.1/thirdparty/ffs/ffs/cod/pregen_source/Windows/cod.y	2023-12-23 19:12:05
+@@ -272,7 +272,7 @@
+ %token <info> string_constant
+ %token <info> floating_constant
+ %token <info> identifier_ref
+-%token <info> type_id
++%token <info> yytype_id
+ %token <info> enumeration_constant
+ 
+ %type <info> struct_or_union;
+@@ -1025,7 +1025,7 @@
+ 	    $$->node.type_specifier.lx_srcpos = $1.lx_srcpos;
+ 	    $$->node.type_specifier.token = STRING;
+ 	}
+-	| type_id {
++	| yytype_id {
+ 	    $$ = cod_new_identifier();
+ 	    $$->node.identifier.lx_srcpos = $1.lx_srcpos;
+ 	    $$->node.identifier.id = $1.string;
+diff -ur ADIOS2-2.9.1.orig/thirdparty/ffs/ffs/cod/pregen_source/Windows/lex.yy.c ADIOS2-2.9.1/thirdparty/ffs/ffs/cod/pregen_source/Windows/lex.yy.c
+--- ADIOS2-2.9.1.orig/thirdparty/ffs/ffs/cod/pregen_source/Windows/lex.yy.c	2023-08-03 11:30:15
++++ ADIOS2-2.9.1/thirdparty/ffs/ffs/cod/pregen_source/Windows/lex.yy.c	2023-12-23 19:12:05
+@@ -1431,7 +1431,7 @@
+ {
+ 				yylval.info.string = create_string_from_yytext();
+ 				if (is_defined_type(yylval.info.string)) {
+-				    RETURN(type_id);
++				    RETURN(yytype_id);
+ 				} else if (is_enumeration_constant(yylval.info.string)) {
+ 				    RETURN(enumeration_constant);
+ 				} else {
+diff -ur ADIOS2-2.9.1.orig/thirdparty/pybind11/pybind11/include/pybind11/attr.h ADIOS2-2.9.1/thirdparty/pybind11/pybind11/include/pybind11/attr.h
+--- ADIOS2-2.9.1.orig/thirdparty/pybind11/pybind11/include/pybind11/attr.h	2023-08-03 11:30:15
++++ ADIOS2-2.9.1/thirdparty/pybind11/pybind11/include/pybind11/attr.h	2023-12-23 19:12:05
+@@ -328,14 +328,14 @@
+         auto *base_info = detail::get_type_info(base, false);
+         if (!base_info) {
+             std::string tname(base.name());
+-            detail::clean_type_id(tname);
++            detail::clean_yytype_id(tname);
+             pybind11_fail("generic_type: type \"" + std::string(name)
+                           + "\" referenced unknown base type \"" + tname + "\"");
+         }
+ 
+         if (default_holder != base_info->default_holder) {
+             std::string tname(base.name());
+-            detail::clean_type_id(tname);
++            detail::clean_yytype_id(tname);
+             pybind11_fail("generic_type: type \"" + std::string(name) + "\" "
+                           + (default_holder ? "does not have" : "has")
+                           + " a non-default holder type while its base \"" + tname + "\" "
+diff -ur ADIOS2-2.9.1.orig/thirdparty/pybind11/pybind11/include/pybind11/cast.h ADIOS2-2.9.1/thirdparty/pybind11/pybind11/include/pybind11/cast.h
+--- ADIOS2-2.9.1.orig/thirdparty/pybind11/pybind11/include/pybind11/cast.h	2023-08-03 11:30:15
++++ ADIOS2-2.9.1/thirdparty/pybind11/pybind11/include/pybind11/cast.h	2023-12-23 19:12:05
+@@ -781,7 +781,7 @@
+                          "(compile in debug mode for type information)");
+ #else
+                          "of type '"
+-                         + type_id<holder_type>() + "''");
++                         + yytype_id<holder_type>() + "''");
+ #endif
+     }
+ 
+@@ -1007,7 +1007,7 @@
+ #else
+         throw cast_error("Unable to cast Python instance of type "
+                          + (std::string) str(type::handle_of(handle)) + " to C++ type '"
+-                         + type_id<T>() + "'");
++                         + yytype_id<T>() + "'");
+ #endif
+     }
+     return conv;
+@@ -1074,7 +1074,7 @@
+             " (compile in debug mode for details)");
+ #else
+         throw cast_error("Unable to move from Python " + (std::string) str(type::handle_of(obj))
+-                         + " instance to C++ " + type_id<T>()
++                         + " instance to C++ " + yytype_id<T>()
+                          + " instance: instance has multiple references");
+ #endif
+     }
+@@ -1197,7 +1197,7 @@
+ #if defined(NDEBUG)
+             throw cast_error_unable_to_convert_call_arg();
+ #else
+-            std::array<std::string, size> argtypes{{type_id<Args>()...}};
++            std::array<std::string, size> argtypes{{yytype_id<Args>()...}};
+             throw cast_error_unable_to_convert_call_arg(std::to_string(i), argtypes[i]);
+ #endif
+         }
+@@ -1248,7 +1248,7 @@
+           descr(descr)
+ #if !defined(NDEBUG)
+           ,
+-          type(type_id<T>())
++          type(yytype_id<T>())
+ #endif
+     {
+         // Workaround! See:
+@@ -1488,7 +1488,7 @@
+             throw cast_error_unable_to_convert_call_arg();
+ #else
+             throw cast_error_unable_to_convert_call_arg(std::to_string(args_list.size()),
+-                                                        type_id<T>());
++                                                        yytype_id<T>());
+ #endif
+         }
+         args_list.append(o);
+diff -ur ADIOS2-2.9.1.orig/thirdparty/pybind11/pybind11/include/pybind11/detail/type_caster_base.h ADIOS2-2.9.1/thirdparty/pybind11/pybind11/include/pybind11/detail/type_caster_base.h
+--- ADIOS2-2.9.1.orig/thirdparty/pybind11/pybind11/include/pybind11/detail/type_caster_base.h	2023-08-03 11:30:15
++++ ADIOS2-2.9.1/thirdparty/pybind11/pybind11/include/pybind11/detail/type_caster_base.h	2023-12-23 19:12:05
+@@ -224,7 +224,7 @@
+ 
+     if (throw_if_missing) {
+         std::string tname = tp.name();
+-        detail::clean_type_id(tname);
++        detail::clean_yytype_id(tname);
+         pybind11_fail("pybind11::detail::get_type_info: unable to find type info for \""
+                       + std::move(tname) + '"');
+     }
+@@ -617,7 +617,7 @@
+                                      "non-copyable! (compile in debug mode for details)");
+ #else
+                     std::string type_name(tinfo->cpptype->name());
+-                    detail::clean_type_id(type_name);
++                    detail::clean_yytype_id(type_name);
+                     throw cast_error("return_value_policy = copy, but type " + type_name
+                                      + " is non-copyable!");
+ #endif
+@@ -637,7 +637,7 @@
+                                      "(compile in debug mode for details)");
+ #else
+                     std::string type_name(tinfo->cpptype->name());
+-                    detail::clean_type_id(type_name);
++                    detail::clean_yytype_id(type_name);
+                     throw cast_error("return_value_policy = move, but type " + type_name
+                                      + " is neither movable nor copyable!");
+ #endif
+@@ -847,7 +847,7 @@
+ 
+         // Not found, set error:
+         std::string tname = rtti_type ? rtti_type->name() : cast_type.name();
+-        detail::clean_type_id(tname);
++        detail::clean_yytype_id(tname);
+         std::string msg = "Unregistered type : " + tname;
+         PyErr_SetString(PyExc_TypeError, msg.c_str());
+         return {nullptr, nullptr};
+diff -ur ADIOS2-2.9.1.orig/thirdparty/pybind11/pybind11/include/pybind11/detail/typeid.h ADIOS2-2.9.1/thirdparty/pybind11/pybind11/include/pybind11/detail/typeid.h
+--- ADIOS2-2.9.1.orig/thirdparty/pybind11/pybind11/include/pybind11/detail/typeid.h	2023-08-03 11:30:15
++++ ADIOS2-2.9.1/thirdparty/pybind11/pybind11/include/pybind11/detail/typeid.h	2023-12-23 19:12:05
+@@ -31,7 +31,7 @@
+     }
+ }
+ 
+-PYBIND11_NOINLINE void clean_type_id(std::string &name) {
++PYBIND11_NOINLINE void clean_yytype_id(std::string &name) {
+ #if defined(__GNUG__)
+     int status = 0;
+     std::unique_ptr<char, void (*)(void *)> res{
+@@ -50,9 +50,9 @@
+ 
+ /// Return a string representation of a C++ type
+ template <typename T>
+-static std::string type_id() {
++static std::string yytype_id() {
+     std::string name(typeid(T).name());
+-    detail::clean_type_id(name);
++    detail::clean_yytype_id(name);
+     return name;
+ }
+ 
+diff -ur ADIOS2-2.9.1.orig/thirdparty/pybind11/pybind11/include/pybind11/pybind11.h ADIOS2-2.9.1/thirdparty/pybind11/pybind11/include/pybind11/pybind11.h
+--- ADIOS2-2.9.1.orig/thirdparty/pybind11/pybind11/include/pybind11/pybind11.h	2023-08-03 11:30:15
++++ ADIOS2-2.9.1/thirdparty/pybind11/pybind11/include/pybind11/pybind11.h	2023-12-23 19:12:05
+@@ -440,7 +440,7 @@
+                                  + rec->scope.attr("__qualname__").cast<std::string>();
+                 } else {
+                     std::string tname(t->name());
+-                    detail::clean_type_id(tname);
++                    detail::clean_yytype_id(tname);
+                     signature += tname;
+                 }
+             } else {
+@@ -2451,7 +2451,7 @@
+     if (auto *tinfo = detail::get_type_info(typeid(OutputType))) {
+         tinfo->implicit_conversions.push_back(implicit_caster);
+     } else {
+-        pybind11_fail("implicitly_convertible: Unable to find type " + type_id<OutputType>());
++        pybind11_fail("implicitly_convertible: Unable to find type " + yytype_id<OutputType>());
+     }
+ }
+ 
