@@ -1,0 +1,9 @@
+diff -ur ADIOS2-2.10.2.orig/thirdparty/yaml-cpp/yaml-cpp/src/emitterutils.cpp ADIOS2-2.10.2/thirdparty/yaml-cpp/yaml-cpp/src/emitterutils.cpp
+--- ADIOS2-2.10.2.orig/thirdparty/yaml-cpp/yaml-cpp/src/emitterutils.cpp	2024-10-25 21:12:27.000000000 -0500
++++ ADIOS2-2.10.2/thirdparty/yaml-cpp/yaml-cpp/src/emitterutils.cpp	2025-06-04 09:53:39.192780939 -0500
+@@ -1,4 +1,5 @@
+ #include <algorithm>
++#include <cstdint>
+ #include <iomanip>
+ #include <sstream>
+ 
