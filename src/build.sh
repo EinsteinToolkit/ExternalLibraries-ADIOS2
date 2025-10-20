@@ -14,7 +14,7 @@ set -e                          # Abort on errors
 
 # Set locations
 THORN=ADIOS2
-NAME=ADIOS2-2.10.2
+NAME=ADIOS2-edc5541
 SRCDIR="$(dirname $0)"
 BUILD_DIR=${SCRATCH_BUILD}/build/${THORN}
 if [ -z "${ADIOS2_INSTALL_DIR}" ]; then
@@ -42,7 +42,6 @@ ${TAR?} xf ${SRCDIR}/../dist/${NAME}.tar
 cd ${NAME}
 
 echo "ADIOS2: Applying patches..."
-${PATCH?} -p1 < ${SRCDIR}/../dist/stdint.patch
 # Some (ancient but still used) versions of patch don't support the
 # patch format used here but also don't report an error using the exit
 # code. So we use this patch to test for this
