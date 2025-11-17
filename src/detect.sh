@@ -81,11 +81,10 @@ if [ -z "${ADIOS2_BUILD}" -a -z "${ADIOS2_INC_DIRS}" -a -z "${ADIOS2_LIB_DIRS}" 
                 test_mpi=1
             fi
             if [ $test_mpi -eq 0 ]; then
-                mpi_libs="" # need to prepend MPI libs
-                for lib in $ADIOS2_REQ_LIBS ; do
-                    mpi_libs="$mpi_libs ${lib}_mpi"
-                done
-                ADIOS2_LIBS="$mpi_libs $ADIOS2_LIBS"
+                ADIOS2_LIBS="adios2_cxx11_mpi adios2_c_mpi adios2_core_mpi ${ADIOS2_LIBS}"
+                if [ "$(echo ${ADIOS2_ENABLE_FORTRAN} | tr '[:upper:]' '[:lower:]')" = 'yes' ]; then
+                    ADIOS2_LIBS="adios2_fortran_mpi ${ADIOS2_LIBS}"
+                fi
             fi
         fi
     fi
