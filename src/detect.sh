@@ -59,7 +59,14 @@ if [ -z "${ADIOS2_BUILD}" -a -z "${ADIOS2_INC_DIRS}" -a -z "${ADIOS2_LIB_DIRS}" 
     if [ -n "${ADIOS2_DIR}" ]; then
         # any libraries needed b/c of ADIOS compile options
         ADIOS2CONFFILES="adios2/common/ADIOSConfig.h"
-        for dir in $ADIOS2_INC_DIRS; do
+        # pkg-config strips system directories by default, call once more
+        # having it report them
+        if [ -n "$PKG_CONFIG_SUCCESS" ]; then
+            INC_DIRS="$(PKG_CONFIG_ALLOW_SYSTEM_CFLAGS=1 pkg-config --cflags-only-I adios | perl -pe 's/(^| )+-I/\1/g')"
+        else
+            INC_DIRS="$ADIOS2_RAW_INC_DIRS"
+        fi
+        for dir in $INC_DIRS; do
             for file in $ADIOS2CONFFILES ; do
                 if [ -r "$dir/$file" ]; then
                     ADIOS2CONF="$dir/$file"
