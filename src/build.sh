@@ -43,6 +43,7 @@ cd ${NAME}
 
 echo "ADIOS2: Applying patches..."
 ${PATCH?} -p1 < ${SRCDIR}/../dist/stdint.patch
+${PATCH?} -p1 < ${SRCDIR}/../dist/ent-no-docs.patch
 # Some (ancient but still used) versions of patch don't support the
 # patch format used here but also don't report an error using the exit
 # code. So we use this patch to test for this

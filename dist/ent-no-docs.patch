@@ -1,0 +1,17 @@
+diff -ur ADIOS2-2.10.2.orig/thirdparty/enet/enet/CMakeLists.txt ADIOS2-2.10.2/thirdparty/enet/enet/CMakeLists.txt
+--- ADIOS2-2.10.2.orig/thirdparty/enet/enet/CMakeLists.txt	2024-10-25 19:12:27.000000000 -0700
++++ ADIOS2-2.10.2/thirdparty/enet/enet/CMakeLists.txt	2026-04-06 10:17:01.942465835 -0700
+@@ -199,13 +199,3 @@
+ install(EXPORT enet-targets NAMESPACE enet::
+   DESTINATION "${CMAKE_INSTALL_CMAKEDIR}"
+   COMPONENT ${ENET_HEADER_COMPONENT})
+-
+-# Build documentation
+-find_package(Doxygen)
+-cmake_dependent_option(BUILD_DOCS
+-  "Build documentation." OFF 
+-  "Doxygen_FOUND" OFF)
+-if(BUILD_DOCS)
+-  doxygen_add_docs(enet_docs "${CMAKE_CURRENT_SOURCE_DIR}" ALL)
+-  install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html" DESTINATION "${CMAKE_INSTALL_DOCDIR}" COMPONENT ${ENET_DOC_COMPONENT})
+-endif()
