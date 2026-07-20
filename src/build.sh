@@ -85,9 +85,34 @@ ADIOS2_USE_BP5="${ADIOS2_ENABLE_SST}"
 #     ADIOS2_USE_CUDAS=OFF
 # fi
 
+# CMake's FindMPI does not reliably locate an MPI installation built from
+# source by the MPI thorn (no system MPI is registered), which causes
+# find_package(MPI) to fail with e.g. "Could NOT find MPI_CXX (missing:
+# MPI_CXX_LIB_NAMES MPI_CXX_HEADER_DIR MPI_CXX_WORKS)". When the MPI thorn
+# built MPI from source (MPI_BUILD set), hint CMake at it via MPI_HOME and
+# the wrapper compilers found beneath MPI_DIR. This is a no-op for a system
+# or manually configured MPI (MPI_BUILD empty), leaving CMake's own
+# detection untouched, so it does not disrupt non-thorn MPI builds.
+MPI_C_OPTION=
+MPI_CXX_OPTION=
+MPI_Fortran_OPTION=
+if [ -n "${MPI_BUILD}" ] && [ -n "${MPI_DIR}" ] && [ -d "${MPI_DIR}" ]; then
+  export MPI_HOME="${MPI_DIR}"
+  if [ -x "${MPI_DIR}/bin/mpicc" ]; then
+    MPI_C_OPTION="-DMPI_C_COMPILER=${MPI_DIR}/bin/mpicc"
+  fi
+  if [ -x "${MPI_DIR}/bin/mpicxx" ]; then
+    MPI_CXX_OPTION="-DMPI_CXX_COMPILER=${MPI_DIR}/bin/mpicxx"
+  fi
+  if [ "${ADIOS2_ENABLE_FORTRAN}" = ON ] && [ -x "${MPI_DIR}/bin/mpifort" ]; then
+    MPI_Fortran_OPTION="-DMPI_Fortran_COMPILER=${MPI_DIR}/bin/mpifort"
+  fi
+  export PATH="${MPI_DIR}/bin:${PATH}"
+fi
+
 mkdir build
 cd build
-${CMAKE_DIR:+${CMAKE_DIR}/bin/}cmake -DADIOS2_USE_MPI=${ADIOS2_USE_MPI} -DADIOS2_USE_HDF5=OFF -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} -DCMAKE_INSTALL_LIBDIR=lib  -DBUILD_TESTING=OFF -DADIOS2_BUILD_EXAMPLES=OFF -DADIOS2_USE_Campaign=OFF -DADIOS2_USE_Fortran=${ADIOS2_ENABLE_FORTRAN} -DADIOS2_USE_Python=OFF -DADIOS2_USE_ZeroMQ=OFF -DADIOS2_USE_PNG=OFF -DADIOS2_USE_BZip2=OFF -DADIOS2_USE_SST=${ADIOS2_ENABLE_SST} -DADIOS2_USE_BP5=${ADIOS2_USE_BP5} -DADIOS2_USE_CUDA=${ADIOS2_ENABLE_CUDA} -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=${ADIOS2_BUILD_TYPE} ..
+${CMAKE_DIR:+${CMAKE_DIR}/bin/}cmake -DADIOS2_USE_MPI=${ADIOS2_USE_MPI} ${MPI_C_OPTION} ${MPI_CXX_OPTION} ${MPI_Fortran_OPTION} -DADIOS2_USE_HDF5=OFF -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} -DCMAKE_INSTALL_LIBDIR=lib  -DBUILD_TESTING=OFF -DADIOS2_BUILD_EXAMPLES=OFF -DADIOS2_USE_Campaign=OFF -DADIOS2_USE_Fortran=${ADIOS2_ENABLE_FORTRAN} -DADIOS2_USE_Python=OFF -DADIOS2_USE_ZeroMQ=OFF -DADIOS2_USE_PNG=OFF -DADIOS2_USE_BZip2=OFF -DADIOS2_USE_SST=${ADIOS2_ENABLE_SST} -DADIOS2_USE_BP5=${ADIOS2_USE_BP5} -DADIOS2_USE_CUDA=${ADIOS2_ENABLE_CUDA} -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=${ADIOS2_BUILD_TYPE} ..
 
 echo "ADIOS2: Building..."
 ${MAKE}
