@@ -145,9 +145,25 @@ elif [ -n "${MPI_INC_DIRS}" ] && [ -n "${MPI_LIBS}" ]; then
   MPI_MANUAL_OPTIONS="${MPI_MANUAL_OPTIONS} -DMPI_C_LIB_NAMES=${MPI_LIB_NAMES} -DMPI_CXX_LIB_NAMES=${MPI_LIB_NAMES}"
 fi
 
+# ADIOS2_INSTALL_GENERATE_CONFIG=OFF: at install time ADIOS2 otherwise
+# generates an adios2-config shell script by configuring a dummy CMake
+# project in a fresh process, whose find_package(adios2) re-runs FindMPI
+# without any of the settings above and fails the same way. Nothing in
+# Cactus uses adios2-config (this thorn and openPMD consume the CMake
+# package files, and neither declares any utilities), so skip generating it.
+#
+# Should adios2-config ever be needed: ADIOS2's generator
+# (cmake/install/post/generate-adios2-config.sh.in) appends the environment
+# variable EXTRA_CMAKE_ARGS to the dummy project's cmake command line, so
+# exporting the manual settings in it before ${MAKE} install, i.e.
+#   export EXTRA_CMAKE_ARGS="${MPI_MANUAL_OPTIONS}"
+# lets the install-time FindMPI succeed as well and the script can be
+# generated again. Untested here: the generator then compiles and links
+# small test programs with the Cactus compilers and parses verbose make
+# output for flags, which is more surface for a GPU toolchain to trip on.
 mkdir build
 cd build
-${CMAKE_DIR:+${CMAKE_DIR}/bin/}cmake -DADIOS2_USE_MPI=${ADIOS2_USE_MPI} ${MPI_C_OPTION} ${MPI_CXX_OPTION} ${MPI_Fortran_OPTION} ${MPI_MANUAL_OPTIONS} -DADIOS2_USE_HDF5=OFF -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} -DCMAKE_INSTALL_LIBDIR=lib  -DBUILD_TESTING=OFF -DADIOS2_BUILD_EXAMPLES=OFF -DADIOS2_USE_Campaign=OFF -DADIOS2_USE_Fortran=${ADIOS2_ENABLE_FORTRAN} -DADIOS2_USE_Python=OFF -DADIOS2_USE_ZeroMQ=OFF -DADIOS2_USE_PNG=OFF -DADIOS2_USE_BZip2=OFF -DADIOS2_USE_SST=${ADIOS2_ENABLE_SST} -DADIOS2_USE_BP5=${ADIOS2_USE_BP5} -DADIOS2_USE_CUDA=${ADIOS2_ENABLE_CUDA} -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=${ADIOS2_BUILD_TYPE} ..
+${CMAKE_DIR:+${CMAKE_DIR}/bin/}cmake -DADIOS2_USE_MPI=${ADIOS2_USE_MPI} -DADIOS2_INSTALL_GENERATE_CONFIG=OFF ${MPI_C_OPTION} ${MPI_CXX_OPTION} ${MPI_Fortran_OPTION} ${MPI_MANUAL_OPTIONS} -DADIOS2_USE_HDF5=OFF -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} -DCMAKE_INSTALL_LIBDIR=lib  -DBUILD_TESTING=OFF -DADIOS2_BUILD_EXAMPLES=OFF -DADIOS2_USE_Campaign=OFF -DADIOS2_USE_Fortran=${ADIOS2_ENABLE_FORTRAN} -DADIOS2_USE_Python=OFF -DADIOS2_USE_ZeroMQ=OFF -DADIOS2_USE_PNG=OFF -DADIOS2_USE_BZip2=OFF -DADIOS2_USE_SST=${ADIOS2_ENABLE_SST} -DADIOS2_USE_BP5=${ADIOS2_USE_BP5} -DADIOS2_USE_CUDA=${ADIOS2_ENABLE_CUDA} -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=${ADIOS2_BUILD_TYPE} ..
 
 echo "ADIOS2: Building..."
 ${MAKE}
