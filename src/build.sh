@@ -90,12 +90,27 @@ ADIOS2_USE_BP5="${ADIOS2_ENABLE_SST}"
 # find_package(MPI) to fail with e.g. "Could NOT find MPI_CXX (missing:
 # MPI_CXX_LIB_NAMES MPI_CXX_HEADER_DIR MPI_CXX_WORKS)". When the MPI thorn
 # built MPI from source (MPI_BUILD set), hint CMake at it via MPI_HOME and
-# the wrapper compilers found beneath MPI_DIR. This is a no-op for a system
-# or manually configured MPI (MPI_BUILD empty), leaving CMake's own
-# detection untouched, so it does not disrupt non-thorn MPI builds.
+# the wrapper compilers found beneath MPI_DIR.
+#
+# For a system or manually configured MPI (MPI_BUILD empty) FindMPI instead
+# interrogates whatever wrapper compiler it finds, and some wrappers defeat
+# it: Intel oneAPI's mpicc answers none of the -showme / -compile-info style
+# queries FindMPI issues (only -show, which FindMPI does not use), so
+# MPI_<LANG>_LIB_NAMES stays empty and FindMPI's link test fails with
+# "undefined symbol: MPI_Init" even though mpi.h was found via MPI_HOME.
+# The MPI thorn has already resolved MPI_INC_DIRS / MPI_LIB_DIRS / MPI_LIBS
+# for exactly this configuration, so skip wrapper interrogation altogether
+# and pass those to FindMPI as its manual MPI_<LANG>_HEADER_DIR,
+# MPI_<LANG>_LIB_NAMES and MPI_<lib>_LIBRARY settings (C and C++ only;
+# Fortran keeps CMake's own detection). Only libraries found beneath
+# MPI_LIB_DIRS are listed: FindMPI demands a resolved path for every name
+# and does not fall back to the system paths, and the remaining entries of
+# MPI_LIBS (typically rt, pthread, dl) are system libraries the final Cactus
+# link adds from MPI_LIBS anyway.
 MPI_C_OPTION=
 MPI_CXX_OPTION=
 MPI_Fortran_OPTION=
+MPI_MANUAL_OPTIONS=
 if [ -n "${MPI_BUILD}" ] && [ -n "${MPI_DIR}" ] && [ -d "${MPI_DIR}" ]; then
   export MPI_HOME="${MPI_DIR}"
   if [ -x "${MPI_DIR}/bin/mpicc" ]; then
@@ -108,11 +123,31 @@ if [ -n "${MPI_BUILD}" ] && [ -n "${MPI_DIR}" ] && [ -d "${MPI_DIR}" ]; then
     MPI_Fortran_OPTION="-DMPI_Fortran_COMPILER=${MPI_DIR}/bin/mpifort"
   fi
   export PATH="${MPI_DIR}/bin:${PATH}"
+elif [ -n "${MPI_INC_DIRS}" ] && [ -n "${MPI_LIBS}" ]; then
+  MPI_FIRST_INC_DIR="${MPI_INC_DIRS%% *}"
+  MPI_EXTRA_INC_DIRS=$(echo ${MPI_INC_DIRS#"${MPI_FIRST_INC_DIR}"} | tr ' ' ';')
+  MPI_MANUAL_OPTIONS="-DMPI_C_HEADER_DIR=${MPI_FIRST_INC_DIR} -DMPI_CXX_HEADER_DIR=${MPI_FIRST_INC_DIR}"
+  if [ -n "${MPI_EXTRA_INC_DIRS}" ]; then
+    MPI_MANUAL_OPTIONS="${MPI_MANUAL_OPTIONS} -DMPI_C_ADDITIONAL_INCLUDE_DIRS=${MPI_EXTRA_INC_DIRS} -DMPI_CXX_ADDITIONAL_INCLUDE_DIRS=${MPI_EXTRA_INC_DIRS}"
+  fi
+  MPI_LIB_NAMES=
+  for MPI_LIB in ${MPI_LIBS}; do
+    for MPI_LIB_DIR in ${MPI_LIB_DIRS}; do
+      for MPI_LIB_FILE in "${MPI_LIB_DIR}/lib${MPI_LIB}.so" "${MPI_LIB_DIR}/lib${MPI_LIB}.a"; do
+        if [ -f "${MPI_LIB_FILE}" ]; then
+          MPI_LIB_NAMES="${MPI_LIB_NAMES}${MPI_LIB_NAMES:+;}${MPI_LIB}"
+          MPI_MANUAL_OPTIONS="${MPI_MANUAL_OPTIONS} -DMPI_${MPI_LIB}_LIBRARY=${MPI_LIB_FILE}"
+          break 2
+        fi
+      done
+    done
+  done
+  MPI_MANUAL_OPTIONS="${MPI_MANUAL_OPTIONS} -DMPI_C_LIB_NAMES=${MPI_LIB_NAMES} -DMPI_CXX_LIB_NAMES=${MPI_LIB_NAMES}"
 fi
 
 mkdir build
 cd build
-${CMAKE_DIR:+${CMAKE_DIR}/bin/}cmake -DADIOS2_USE_MPI=${ADIOS2_USE_MPI} ${MPI_C_OPTION} ${MPI_CXX_OPTION} ${MPI_Fortran_OPTION} -DADIOS2_USE_HDF5=OFF -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} -DCMAKE_INSTALL_LIBDIR=lib  -DBUILD_TESTING=OFF -DADIOS2_BUILD_EXAMPLES=OFF -DADIOS2_USE_Campaign=OFF -DADIOS2_USE_Fortran=${ADIOS2_ENABLE_FORTRAN} -DADIOS2_USE_Python=OFF -DADIOS2_USE_ZeroMQ=OFF -DADIOS2_USE_PNG=OFF -DADIOS2_USE_BZip2=OFF -DADIOS2_USE_SST=${ADIOS2_ENABLE_SST} -DADIOS2_USE_BP5=${ADIOS2_USE_BP5} -DADIOS2_USE_CUDA=${ADIOS2_ENABLE_CUDA} -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=${ADIOS2_BUILD_TYPE} ..
+${CMAKE_DIR:+${CMAKE_DIR}/bin/}cmake -DADIOS2_USE_MPI=${ADIOS2_USE_MPI} ${MPI_C_OPTION} ${MPI_CXX_OPTION} ${MPI_Fortran_OPTION} ${MPI_MANUAL_OPTIONS} -DADIOS2_USE_HDF5=OFF -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} -DCMAKE_INSTALL_LIBDIR=lib  -DBUILD_TESTING=OFF -DADIOS2_BUILD_EXAMPLES=OFF -DADIOS2_USE_Campaign=OFF -DADIOS2_USE_Fortran=${ADIOS2_ENABLE_FORTRAN} -DADIOS2_USE_Python=OFF -DADIOS2_USE_ZeroMQ=OFF -DADIOS2_USE_PNG=OFF -DADIOS2_USE_BZip2=OFF -DADIOS2_USE_SST=${ADIOS2_ENABLE_SST} -DADIOS2_USE_BP5=${ADIOS2_USE_BP5} -DADIOS2_USE_CUDA=${ADIOS2_ENABLE_CUDA} -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=${ADIOS2_BUILD_TYPE} ..
 
 echo "ADIOS2: Building..."
 ${MAKE}
